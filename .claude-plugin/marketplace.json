@@ -1,0 +1,14 @@
+{
+  "name": "claude-starterkit",
+  "description": "Verification-first setup for Claude Code: few instructions, executable checks, periodic cleanup, and alerts when Claude needs you.",
+  "owner": {
+    "name": "stefanochieli"
+  },
+  "plugins": [
+    {
+      "name": "starterkit",
+      "source": "./plugins/starterkit",
+      "description": "Three manual skills (deeper, setup-project, audit-config), a verifier subagent, and voice/sound alerts for when Claude finishes or needs you. Small always-on footprint; skill text loads only when invoked."
+    }
+  ]
+}

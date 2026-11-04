@@ -1,0 +1,95 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Unit tests
+        run: node --test
+      # The Windows branch of notify.js builds a PowerShell script. Parse every
+      # variant with the real PowerShell parser (nothing is executed or played).
+      - name: Generated PowerShell parses (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:STARTERKIT_NOTIFY_DRYRUN = '1'
+          $env:STARTERKIT_NOTIFY_PLATFORM = 'win32'
+          $env:STARTERKIT_NOTIFY_EVENTS = 'done,permission,question,idle'
+          $count = 0
+          foreach ($mode in 'sound', 'voice', 'both') {
+            foreach ($lang in 'en', 'it') {
+              foreach ($kind in 'done', 'permission', 'question', 'idle') {
+                $env:STARTERKIT_NOTIFY = $mode
+                $env:STARTERKIT_NOTIFY_LANG = $lang
+                $line = node plugins/starterkit/scripts/notify.js $kind | ConvertFrom-Json
+                $tokens = $null
+                $errors = $null
+                [System.Management.Automation.Language.Parser]::ParseInput($line.script, [ref]$tokens, [ref]$errors) | Out-Null
+                if ($errors.Count -gt 0) {
+                  throw "PowerShell parse error ($mode/$lang/$kind): $($errors[0].Message)"
+                }
+                $count++
+              }
+            }
+          }
+          Write-Host "$count generated scripts parsed cleanly"
+
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: JSON files are valid
+        run: |
+          for f in .claude-plugin/marketplace.json \
+                   plugins/starterkit/.claude-plugin/plugin.json \
+                   plugins/starterkit/hooks/hooks.json \
+                   .github/rulesets/protect-main.json; do
+            node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))' "$f"
+            echo "ok: $f"
+          done
+      - name: Shell script syntax
+        run: bash -n scripts/install-global.sh
+      - name: Claude Code plugin validation
+        run: |
+          npm install --global @anthropic-ai/claude-code
+          claude plugin validate .
+          claude plugin validate plugins/starterkit
+
+  # The single status check required by the protect-main ruleset.
+  checks:
+    name: checks
+    needs: [test, validate]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: All jobs passed
+        run: |
+          echo "test: ${{ needs.test.result }}"
+          echo "validate: ${{ needs.validate.result }}"
+          test "${{ needs.test.result }}" = "success"
+          test "${{ needs.validate.result }}" = "success"

@@ -1,0 +1,15 @@
+{
+  "_comment": "OPTIONAL example, not enabled by the plugin. Copy into a project's .claude/settings.json and replace the command. Use only if the check is fast; a slow Stop hook makes every turn expensive.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "REPLACE_WITH_YOUR_FAST_VERIFICATION_COMMAND"
+          }
+        ]
+      }
+    ]
+  }
+}

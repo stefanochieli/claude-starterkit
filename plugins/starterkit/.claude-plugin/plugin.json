@@ -1,0 +1,12 @@
+{
+  "name": "starterkit",
+  "version": "0.3.0",
+  "description": "Verification-first, low-context setup for Claude Code: deeper task prompts, per-project configuration, periodic config audit, a verifier subagent, and voice/sound alerts when Claude finishes or needs you.",
+  "author": {
+    "name": "stefanochieli"
+  },
+  "homepage": "https://github.com/stefanochieli/claude-starterkit",
+  "repository": "https://github.com/stefanochieli/claude-starterkit",
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-md", "verification", "testing", "audit", "notifications", "hooks"]
+}
