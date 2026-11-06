@@ -2,7 +2,7 @@
 
 A small, verification-first setup for Claude Code. It packages a few habits that work well with current models:
 
-- **Little context.** The skills are manual-only and their full text loads only when you invoke them. The always-on footprint reported by `claude plugin details starterkit` is about 230 tokens per session (v0.3.0). Hooks cost no context.
+- **Little context.** The skills are manual-only and their full text loads only when you invoke them. The always-on footprint is about 75 tokens per session (v0.3.0, measured as the difference in input tokens with and without the plugin): only the `verifier` description is listed to the model. `claude plugin details starterkit` shows ~233 because it also counts the manual skills. Hooks cost no context.
 - **Proof over diffs.** "Done" means an executable check passed, not that the agent said so.
 - **Periodic cleanup.** Configuration that models no longer need gets removed.
 - **Know when Claude needs you.** A voice or sound alert when Claude finishes, asks for permission, or asks a question, so you can look away while it works.
@@ -14,7 +14,7 @@ A small, verification-first setup for Claude Code. It packages a few habits that
 | `deeper` skill | `/starterkit:deeper <task>` | Rewrites a task into a *deeper* (not bigger) version: what a senior would add, which raw sources to read, which tools to use, what proves it is right. Does not execute; waits for your OK. |
 | `setup-project` skill | `/starterkit:setup-project` | Analyzes the repo and proposes a lean CLAUDE.md, verification commands, and only the hooks, skills and subagents that earn their place. Approval required before any change. |
 | `audit-config` skill | `/starterkit:audit-config [report\|apply]` | Monthly audit of usage and user-level config: heavy subagents, unused MCP servers, stale skills, bloated CLAUDE.md. Report-only by default; backups and diffs before any change. |
-| `verifier` subagent | delegated by Claude, or "use the verifier" | Clean-context checker. Runs the project's checks and looks for weakened tests. Read-only. |
+| `verifier` subagent | delegated by Claude, or "use the verifier" | Clean-context checker. Runs the project's checks and looks for weakened tests. It has no edit tools, but `Bash` is not restricted, so "does not edit" is an instruction, not a guarantee. |
 | Alert hooks | automatic | Sound or voice alert on `Stop`, permission prompts, questions, and (optionally) idle. See [Alerts](#alerts-when-claude-finishes-or-needs-you). |
 | Templates | `plugins/starterkit/templates/` | Global and per-project CLAUDE.md skeletons and an optional Stop-hook example (not enabled). |
 
@@ -95,10 +95,10 @@ Spoken messages exist in English and Italian (`MESSAGES` at the top of `notify.j
 
 ### Requirements
 
-- **Node.js 18 or later on your PATH.** The hooks run `node`.
+- **Node.js on your PATH** (CI tests Node 20). The hooks run `node`.
 - **Windows:** nothing else. Sounds and speech use the built-in `powershell.exe`, with console beeps (independent of your sound scheme) and `System.Speech`.
 - **macOS:** nothing else (`afplay`, `say`).
-- **Linux:** a sound player (`canberra-gtk-play`, `paplay` or `pw-play`) and, for voice, `spd-say`, `espeak-ng` or `espeak`. With none of them it falls back to the terminal bell.
+- **Linux:** a sound player (`canberra-gtk-play`, `paplay` or `pw-play`) and, for voice, `spd-say`, `espeak-ng` or `espeak`. With none of them it tries the terminal bell (`/dev/tty`), which may not sound if the hook has no terminal. macOS and Windows have no bell fallback.
 - **WSL:** uses the Windows `powershell.exe` through interop, and falls back to the Linux tools.
 - Hooks run where Claude Code runs. In a remote or cloud session nothing plays on your own computer.
 
@@ -161,7 +161,7 @@ Kit minimale per Claude Code: poco contesto (le skill si caricano solo se le ric
 
 - Installazione: `claude plugin marketplace add stefanochieli/claude-starterkit`, poi `claude plugin install starterkit@claude-starterkit`.
 - Comandi: `/starterkit:deeper`, `/starterkit:setup-project`, `/starterkit:audit-config`.
-- Avvisi: per default un suono breve (diverso tra "ho finito" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js 18+ nel PATH.
+- Avvisi: per default un suono breve (diverso tra "ho finito" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js nel PATH.
 - Le regole globali opzionali si installano con `scripts/install-global.sh` (o `.ps1` su Windows), con backup automatico.
 
 ## License
