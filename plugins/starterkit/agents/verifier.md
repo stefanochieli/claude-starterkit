@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Independent verifier. Use after an implementation to run the project's checks and confirm tests were not weakened. Reports evidence only; does not edit code.
+description: Runs the project's checks and flags weakened tests. Reports evidence only; does not edit code.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
