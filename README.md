@@ -2,7 +2,7 @@
 
 A small, verification-first setup for Claude Code. It packages a few habits that work well with current models:
 
-- **Little context.** The skills are manual-only and their full text loads only when you invoke them. The always-on footprint is about 75 tokens per session (v0.3.0, measured as the difference in input tokens with and without the plugin): only the `verifier` description is listed to the model. `claude plugin details starterkit` shows ~233 because it also counts the manual skills. Hooks cost no context.
+- **Little context.** The skills are manual-only and their full text loads only when you invoke them. The always-on footprint is about 60 tokens per session (v0.3.0, measured as the difference in input tokens with and without the plugin): only the `verifier` description is listed to the model. `claude plugin details starterkit` shows ~217 because it also counts the manual skills. Hooks cost no context.
 - **Proof over diffs.** "Done" means an executable check passed, not that the agent said so.
 - **Periodic cleanup.** Configuration that models no longer need gets removed.
 - **Know when Claude needs you.** A voice or sound alert when Claude finishes, asks for permission, or asks a question, so you can look away while it works.
@@ -132,7 +132,6 @@ Set `STARTERKIT_NOTIFY` to `off`, or disable the plugin with `/plugin` or `claud
 - A plugin runs with your privileges. Read the files before installing; they are short and plain Markdown, JSON, JavaScript and shell.
 - `audit-config` depends on the usage data your Claude Code version exposes. If it cannot get a data point it says so instead of estimating.
 - The `verifier` agent covers what you defined as checks. Where you have no checks, nothing is verified.
-- If you trace Claude API calls with OpenTelemetry, start with metadata-only mode; full-content mode sends prompts to your observability tool.
 - Skills are manual-only (`disable-model-invocation: true`) on purpose. Remove that line from a skill if you want Claude to invoke it by itself, which raises the always-on cost.
 - Check the footprint any time with `claude plugin details starterkit`.
 - The Windows branch of `notify.js` is covered by tests of the generated PowerShell (quoting, structure), and CI parses every variant with the real PowerShell parser on a Windows runner. Nothing automated can judge how it sounds, so please report anything that misbehaves on real hardware.
