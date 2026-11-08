@@ -124,14 +124,32 @@ function readStdin(cb) {
 
 // Skip an alert if the same group fired a moment ago (a question can raise both a
 // PreToolUse hook and a Notification).
+// The stamp lives in a private per-user folder: /tmp is shared on Linux, and a
+// predictable file name there could be pre-created as a symlink by another user.
+function stampDir() {
+  const uid = typeof process.getuid === 'function' ? process.getuid() : null;
+  if (env.XDG_RUNTIME_DIR) return env.XDG_RUNTIME_DIR;
+  if (uid === null) return os.tmpdir(); // Windows: the temp folder is already per user
+  const dir = path.join(os.tmpdir(), 'starterkit-' + uid);
+  try { fs.mkdirSync(dir, { mode: 0o700 }); } catch (e) { /* exists, checked below */ }
+  const st = fs.lstatSync(dir);
+  if (!st.isDirectory() || st.uid !== uid) throw new Error('unsafe stamp dir');
+  return dir;
+}
+
 function debounced(kind) {
   if (DRY) return false;
   const group = kind === 'permission' || kind === 'question' ? 'input' : kind;
-  const stamp = path.join(os.tmpdir(), 'starterkit-notify-' + group + '.stamp');
+  let stamp;
+  try { stamp = path.join(stampDir(), 'starterkit-notify-' + group + '.stamp'); } catch (e) { return false; }
   try {
     if (Date.now() - fs.statSync(stamp).mtimeMs < DEBOUNCE_MS) return true;
   } catch (e) { /* no previous stamp */ }
-  try { fs.writeFileSync(stamp, String(Date.now())); } catch (e) { /* best effort */ }
+  try {
+    const fd = fs.openSync(stamp, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | (fs.constants.O_NOFOLLOW || 0), 0o600);
+    fs.writeSync(fd, String(Date.now()));
+    fs.closeSync(fd);
+  } catch (e) { /* best effort */ }
   return false;
 }
 
@@ -185,9 +203,10 @@ function alertMac(o) {
   if (o.sound) ok = exec('afplay', ['/System/Library/Sounds/' + MAC_SOUNDS[o.kind] + '.aiff']) || ok;
   if (o.voiceOn) {
     const voice = o.voice || (o.lang === 'it' ? 'Alice' : '');
-    let spoke = voice ? exec('say', ['-v', voice, o.text]) : exec('say', [o.text]);
+    // "--" so a project folder name that starts with "-" is never read as an option.
+    let spoke = voice ? exec('say', ['-v', voice, '--', o.text]) : exec('say', ['--', o.text]);
     // Requested voice not installed: speak the English text with the default voice.
-    if (!spoke && voice && !o.voice) spoke = exec('say', [o.fallbackText]);
+    if (!spoke && voice && !o.voice) spoke = exec('say', ['--', o.fallbackText]);
     if (!spoke && !o.sound) spoke = exec('afplay', ['/System/Library/Sounds/' + MAC_SOUNDS[o.kind] + '.aiff']);
     ok = spoke || ok;
   }
@@ -213,12 +232,12 @@ function linuxSound(kind) {
 }
 
 function linuxSpeak(o) {
-  const spd = ['-w', '-l', o.lang].concat(o.voice ? ['-y', o.voice] : [], [o.text]);
+  const spd = ['-w', '-l', o.lang].concat(o.voice ? ['-y', o.voice] : [], ['--', o.text]);
   const voice = o.voice || o.lang;
   return (
     exec('spd-say', spd) ||
-    exec('espeak-ng', ['-v', voice, o.text]) ||
-    exec('espeak', ['-v', voice, o.text])
+    exec('espeak-ng', ['-v', voice, '--', o.text]) ||
+    exec('espeak', ['-v', voice, '--', o.text])
   );
 }
 

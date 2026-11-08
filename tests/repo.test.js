@@ -7,7 +7,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
-const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+// Normalize CRLF: on Windows, git (core.autocrlf / text=auto) checks files out with \r\n.
+const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 const json = (p) => JSON.parse(read(p));
 
 test('marketplace entry, plugin manifest and directory agree', () => {
@@ -24,12 +25,12 @@ test('marketplace entry, plugin manifest and directory agree', () => {
 test('every skill and agent has frontmatter with a name matching its folder or file', () => {
   const base = path.join(ROOT, 'plugins', 'starterkit');
   for (const dir of fs.readdirSync(path.join(base, 'skills'))) {
-    const text = fs.readFileSync(path.join(base, 'skills', dir, 'SKILL.md'), 'utf8');
+    const text = read(path.join('plugins', 'starterkit', 'skills', dir, 'SKILL.md'));
     assert.match(text, new RegExp('^---\\nname: ' + dir + '\\n', 'm'), 'skill ' + dir);
     assert.match(text, /^description: .+/m);
   }
   for (const file of fs.readdirSync(path.join(base, 'agents'))) {
-    const text = fs.readFileSync(path.join(base, 'agents', file), 'utf8');
+    const text = read(path.join('plugins', 'starterkit', 'agents', file));
     assert.match(text, new RegExp('^---\\nname: ' + file.replace(/\.md$/, '') + '\\n', 'm'), 'agent ' + file);
   }
 });

@@ -141,16 +141,16 @@ test('macOS sounds differ by event; voice uses Alice for Italian', () => {
   assert.match(d.lines[0].args[0], /Glass\.aiff$/);
   assert.match(p.lines[0].args[0], /Ping\.aiff$/);
   const v = run(['done'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'it' });
-  assert.deepEqual(v.lines[0], { cmd: 'say', args: ['-v', 'Alice', 'Claude ha finito'] });
+  assert.deepEqual(v.lines[0], { cmd: 'say', args: ['-v', 'Alice', '--', 'Claude ha finito'] });
   const e = run(['question'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'en' });
-  assert.deepEqual(e.lines[0], { cmd: 'say', args: ['Claude has a question'] });
+  assert.deepEqual(e.lines[0], { cmd: 'say', args: ['--', 'Claude has a question'] });
 });
 
 test('linux: canberra sound id and spd-say language', () => {
   const s = run(['done'], { STARTERKIT_NOTIFY_PLATFORM: 'linux' });
   assert.deepEqual(s.lines[0], { cmd: 'canberra-gtk-play', args: ['-i', 'complete'] });
   const v = run(['done'], { STARTERKIT_NOTIFY_PLATFORM: 'linux', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'it' });
-  assert.deepEqual(v.lines[0], { cmd: 'spd-say', args: ['-w', '-l', 'it', 'Claude ha finito'] });
+  assert.deepEqual(v.lines[0], { cmd: 'spd-say', args: ['-w', '-l', 'it', '--', 'Claude ha finito'] });
 });
 
 test('language: env override, LANG, and English default', () => {
@@ -196,7 +196,7 @@ test('real run: macOS falls back to the English text when the Italian voice is m
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starterkit-tmp-'));
   const r = run(['done'], { PATH: bin, TMPDIR: tmp, STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'it' }, '', false);
   assert.equal(r.status, 0);
-  assert.deepEqual(fs.readFileSync(log, 'utf8').trim().split('\n'), ['say -v Alice Claude ha finito', 'say Claude is done']);
+  assert.deepEqual(fs.readFileSync(log, 'utf8').trim().split('\n'), ['say -v Alice -- Claude ha finito', 'say -- Claude is done']);
 });
 
 test('real run: Linux voice falls through to espeak-ng, then to the sound', { skip: !POSIX }, () => {
@@ -205,7 +205,7 @@ test('real run: Linux voice falls through to espeak-ng, then to the sound', { sk
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starterkit-tmp-'));
   const r = run(['done'], { PATH: bin, TMPDIR: tmp, STARTERKIT_NOTIFY_PLATFORM: 'linux', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'it' }, '', false);
   assert.equal(r.status, 0);
-  assert.equal(fs.readFileSync(log, 'utf8').trim(), 'espeak-ng -v it Claude ha finito');
+  assert.equal(fs.readFileSync(log, 'utf8').trim(), 'espeak-ng -v it -- Claude ha finito');
 });
 
 test('real run: a second alert within a few seconds is skipped, other groups are not', { skip: !POSIX }, () => {
@@ -228,4 +228,24 @@ test('real run: no player and no TTS at all still exits 0 and silently', { skip:
   const r = run(['done'], { PATH: empty, TMPDIR: tmp, STARTERKIT_NOTIFY_PLATFORM: 'linux', STARTERKIT_NOTIFY: 'both' }, '', false);
   assert.equal(r.status, 0);
   assert.equal(r.stderr, '');
+});
+
+test('real run: the debounce stamp is a private per-user folder and a planted symlink is not followed', { skip: !POSIX || typeof process.getuid !== 'function' }, () => {
+  const bin = fakeBin({ afplay: 'true' });
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starterkit-tmp-'));
+  const victim = path.join(tmp, 'victim.txt');
+  fs.writeFileSync(victim, 'keep');
+  const dir = path.join(tmp, 'starterkit-' + process.getuid());
+  fs.mkdirSync(dir, { mode: 0o700 });
+  fs.symlinkSync(victim, path.join(dir, 'starterkit-notify-done.stamp'));
+  const r = run(['done'], { PATH: bin, TMPDIR: tmp, STARTERKIT_NOTIFY_PLATFORM: 'darwin' }, '', false);
+  assert.equal(r.status, 0);
+  assert.equal(fs.readFileSync(victim, 'utf8'), 'keep');
+  assert.equal(fs.statSync(dir).mode & 0o077, 0);
+});
+
+test('a project folder starting with "-" is passed after "--"', () => {
+  const input = JSON.stringify({ cwd: '/home/me/-rf' });
+  const r = run(['done'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'en', STARTERKIT_NOTIFY_PROJECT: '1' }, input);
+  assert.deepEqual(r.lines[0].args.slice(-2), ['--', 'Claude is done, project -rf']);
 });
