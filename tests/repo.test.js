@@ -58,3 +58,11 @@ test('workflow runs on pull requests and on pushes to main', () => {
   const wf = read('.github/workflows/checks.yml');
   assert.match(wf, /^on:\n  pull_request:\n  push:\n    branches: \[main\]/m);
 });
+
+test('plugin version is documented in the CHANGELOG and tagged by the tag-release workflow', () => {
+  const version = json('plugins/starterkit/.claude-plugin/plugin.json').version;
+  assert.match(read('CHANGELOG.md'), new RegExp('^## ' + version.replace(/\./g, '\\.') + '$', 'm'));
+  const wf = read('.github/workflows/tag-release.yml');
+  assert.match(wf, /^on:\n  push:\n    branches: \[main\]/m);
+  assert.match(wf, /plugins\/starterkit\/\.claude-plugin\/plugin\.json/);
+});
