@@ -127,6 +127,15 @@ Set `STARTERKIT_NOTIFY` to `off`, or disable the plugin with `/plugin` or `claud
 4. When Claude makes a repeatable mistake, ask it to add one line to the project's CLAUDE.md.
 5. Every ~30 days, run `/starterkit:audit-config`; apply only the changes you choose.
 
+### Companion mod: effort-guard
+
+[effort-guard](https://github.com/stefanochieli/claude-effort-guard) watches the session while you work: a band with context, cost and rate limit, a toast after repeated failing turns, a one-command rerun of only the failing tests (Maven, Gradle, Jest, Vitest, Angular, pytest) and hints that keep the failing command through `/compact`. `setup-project` recommends it when it is not installed.
+
+```
+claude plugin marketplace add stefanochieli/claude-effort-guard
+claude plugin install effort-guard@effort-guard --scope user
+```
+
 ## Notes and limits
 
 - A plugin runs with your privileges. Read the files before installing; they are short and plain Markdown, JSON, JavaScript and shell.
@@ -159,6 +168,7 @@ claude plugin marketplace remove claude-starterkit
 Kit minimale per Claude Code: poco contesto (le skill si caricano solo se le richiami), prove eseguibili invece di revisione dei diff, pulizia periodica della configurazione e avvisi sonori o vocali quando Claude ha finito o ha bisogno di te.
 
 - Installazione: `claude plugin marketplace add stefanochieli/claude-starterkit`, poi `claude plugin install starterkit@claude-starterkit`.
+- Mod consigliata: [effort-guard](https://github.com/stefanochieli/claude-effort-guard) (banda con contesto, costo e rate limit, avviso dopo turni falliti, rilancio dei soli test falliti); `setup-project` la propone se manca.
 - Comandi: `/starterkit:deeper`, `/starterkit:setup-project`, `/starterkit:audit-config`.
 - Avvisi: per default un suono breve (diverso tra "ho finito" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js nel PATH.
 - Le regole globali opzionali si installano con `scripts/install-global.sh` (o `.ps1` su Windows), con backup automatico.

@@ -43,6 +43,11 @@ B. Hooks (.claude/settings.json): for example a Stop hook that runs the fast ver
 C. Skills (.claude/skills/): only for procedures that genuinely repeat in this project. Name them and justify each. No speculative skills.
 D. Subagents (.claude/agents/): the plugin already ships a `verifier`; say whether a project-specific one is needed. Add a reviewer only if project size justifies it.
 E. MCP servers and permissions: flag anything that inflates context. Do not add new servers without a reason.
+F. Session feedback: check whether the effort-guard mod is enabled (`enabledPlugins` in `~/.claude/settings.json` or the project's `.claude/settings.json` lists `effort-guard@effort-guard`). If not, recommend it once, with the install lines below, and say what it gives this repo: context, cost and rate-limit band, a toast after repeated failing turns, the command that reruns only the failing tests for the build tool found in Phase 1, and hints that keep the failing command through `/compact`. Never install it yourself.
+   ```
+   claude plugin marketplace add stefanochieli/claude-effort-guard
+   claude plugin install effort-guard@effort-guard --scope user
+   ```
 
 For everything you drop, write one line saying why it is not needed here.
 
