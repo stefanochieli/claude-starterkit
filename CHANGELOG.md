@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `setup-project` checks whether the effort-guard mod is enabled and recommends it if not; README documents it as a companion mod.
+
 ## 0.3.0
 
 Initial public version.
