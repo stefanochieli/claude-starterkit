@@ -127,6 +127,17 @@ Set `STARTERKIT_NOTIFY` to `off`, or disable the plugin with `/plugin` or `claud
 4. When Claude makes a repeatable mistake, ask it to add one line to the project's CLAUDE.md.
 5. Every ~30 days, run `/starterkit:audit-config`; apply only the changes you choose.
 
+### Prompting habits for Opus 5.5
+
+The skills follow Anthropic's guide ["Using Claude Opus 5.5 as your daily driver for knowledge work"](https://claude.com/resources/articles/using-claude-opus-5-5-as-your-daily-driver-for-knowledge-work):
+
+- Drop "think hard": the model decides how much to think. `audit-config` flags it where it lingers.
+- Start at Medium effort and raise it (`/effort`) only when a task stalls.
+- Say what done looks like (goal, finished output, when to ask): `deeper` produces this shape.
+- Attach charts and screenshots instead of retyping their numbers.
+- Connect files and systems; `setup-project` points out connectors worth adding.
+- Share the house style and name concrete patterns to avoid: optional Style section in the project template.
+
 ### Companion mod: effort-guard
 
 [effort-guard](https://github.com/stefanochieli/claude-effort-guard) watches the session while you work: a band with context, cost and rate limit, a toast after repeated failing turns, a one-command rerun of only the failing tests (Maven, Gradle, Jest, Vitest, Angular, pytest) and hints that keep the failing command through `/compact`. `setup-project` recommends it when it is not installed.
@@ -169,6 +180,7 @@ Kit minimale per Claude Code: poco contesto (le skill si caricano solo se le ric
 
 - Installazione: `claude plugin marketplace add stefanochieli/claude-starterkit`, poi `claude plugin install starterkit@claude-starterkit`.
 - Mod consigliata: [effort-guard](https://github.com/stefanochieli/claude-effort-guard) (banda con contesto, costo e rate limit, avviso dopo turni falliti, rilancio dei soli test falliti); `setup-project` la propone se manca.
+- Abitudini per Opus 5.5 (dalla guida Anthropic): niente "think hard", effort Medium di partenza, definire cosa significa "fatto", allegare grafici e screenshot, connettere file e sistemi, indicare lo stile della casa e i pattern da evitare.
 - Comandi: `/starterkit:deeper`, `/starterkit:setup-project`, `/starterkit:audit-config`.
 - Avvisi: per default un suono breve (diverso tra "ho finito" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js nel PATH.
 - Le regole globali opzionali si installano con `scripts/install-global.sh` (o `.ps1` su Windows), con backup automatico.

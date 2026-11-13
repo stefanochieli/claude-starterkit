@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Opus 5.5 prompting habits: `deeper` rewrites tasks as goal, finished output, checks and stop-and-ask conditions, and no longer invites "think hard"; `audit-config` flags leftover "think hard" lines, retyped chart values and vague style rules; `setup-project` mentions Medium default effort, connectors and a house-style section; project template gets an optional Style section.
 - `setup-project` checks whether the effort-guard mod is enabled and recommends it if not; README documents it as a companion mod.
 
 ## 0.3.0

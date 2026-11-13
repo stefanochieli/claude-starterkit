@@ -30,9 +30,12 @@ A. Concentrated consumption: subagents, skills, commands, tools or projects that
    - If it is built in: do not invent options. Tell me what I can really change (settings, default subagent model, how I invoke it) and what I cannot.
 B. Unused MCP servers: none used in the period (default 30 days). Propose disabling in settings, noting for each how much context it takes (tool count if known) and whether it is user-level or project-level. If you cannot verify usage with certainty, mark it "to confirm" instead of disabling.
 C. Always-loaded context: a long, redundant or stale global CLAUDE.md; instructions current models no longer need; long procedures that should be on-demand skills; plugins whose always-visible skill/agent descriptions cost context but are never used.
+C2. Prompting habits from older models: lines in `~/.claude/CLAUDE.md`, skills, commands and agents that tell the model to "think hard", "think carefully", "ultrathink" or similar (current Opus models decide how much to think; these only slow the first reply), and workarounds such as retyping chart values instead of attaching the chart. Also flag vague style rules ("avoid a generic look", "be clean") and propose naming the concrete patterns to avoid (for example a specific background or button shape) or pointing to a real example. Check whether the default effort is Medium; recommend raising it only for tasks where Medium stalled.
 D. Stale configuration: skills, commands, agents and hooks unused in the period, duplicated, or pointing at paths or tools that no longer exist.
 
 ## 3. Output (in this order)
+
+(Category C2 proposals appear in the table as category C.)
 
 1. Summary in 5-8 lines: period analyzed, total consumption, main items, potential savings (state if it is an estimate).
 2. Table of proposals: #, category (A-D), what, why (data from the logs), expected impact, risk, how to undo.
