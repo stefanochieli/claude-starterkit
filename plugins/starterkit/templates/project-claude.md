@@ -16,5 +16,8 @@
 ## Conventions and traps
 <!-- Only non-obvious things confirmed in the code. Example: "applied DB migrations are immutable; add a new one". -->
 
+## Style (optional, delete if not needed)
+<!-- House style: link to a real example. Name the patterns to avoid concretely (e.g. "no pill-shaped buttons"), not "avoid a generic look". -->
+
 ## Lessons learned
 <!-- After a repeatable mistake, add one line here. -->

@@ -38,12 +38,14 @@ A. CLAUDE.md (full draft). Include only sections that earn their place:
    - Mandatory verification before declaring done (real commands from Phase 1). Omit the two rules below if `~/.claude/CLAUDE.md` already has the starterkit block. On failure: read the output, fix, rerun. Never say "done" with failing checks.
    - Rule: never modify or weaken existing tests to make them pass; if a test looks wrong, tell me.
    - Non-obvious conventions and traps confirmed in the code
+   - If the repo has a UI or writes documents: a short "Style" section with the house style, pointing to a real example file or guideline in the repo, and naming concrete patterns to avoid (a specific colour, component or layout), not "avoid a generic look". Ask me if you cannot find them.
    - An empty "Lessons learned" section, with the rule: after a repeatable mistake, add one line here.
 B. Hooks (.claude/settings.json): for example a Stop hook that runs the fast verification and blocks completion on failure, or a PostToolUse formatter. Only if the loop stays fast.
 C. Skills (.claude/skills/): only for procedures that genuinely repeat in this project. Name them and justify each. No speculative skills.
 D. Subagents (.claude/agents/): the plugin already ships a `verifier`; say whether a project-specific one is needed. Add a reviewer only if project size justifies it.
-E. MCP servers and permissions: flag anything that inflates context. Do not add new servers without a reason.
+E. MCP servers and permissions: flag anything that inflates context. Also note which tracker, docs or design system the project uses and whether a connector or MCP server for it would let Claude read the real source instead of pasted text. Do not add new servers without a reason.
 F. Session feedback: check whether the effort-guard mod is enabled (`enabledPlugins` in `~/.claude/settings.json` or the project's `.claude/settings.json` lists `effort-guard@effort-guard`). If not, recommend it once, with the install lines below, and say what it gives this repo: context, cost and rate-limit band, a toast after repeated failing turns, the command that reruns only the failing tests for the build tool found in Phase 1, and hints that keep the failing command through `/compact`. Never install it yourself.
+   Also say: the default effort is Medium and is usually enough; raise it with `/effort` only when a task stalls, and do not put "think hard" in CLAUDE.md or prompts.
    ```
    claude plugin marketplace add stefanochieli/claude-effort-guard
    claude plugin install effort-guard@effort-guard --scope user
@@ -60,6 +62,7 @@ Create or update only the approved files. Then:
 
 ## Do NOT
 
+- Put "think hard" or similar in CLAUDE.md.
 - Pad CLAUDE.md "just in case".
 - Invent commands, versions or conventions that are not in the repo.
 - Add skills, hooks or agents because they exist.
