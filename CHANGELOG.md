@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Opus 5.5 prompting habits: `deeper` rewrites tasks as goal, finished output, checks and stop-and-ask conditions, and no longer invites "think hard"; `audit-config` flags leftover "think hard" lines, retyped chart values and vague style rules; `setup-project` mentions Medium default effort, connectors and a house-style section; project template gets an optional Style section.
+- Subagents and long-running work (from Anthropic's guides on folding subagents into the main loop and on always-on agents): `setup-project` prefers one agent with skills over specialist subagents and mentions deferred tool calls for unattended runs; `audit-config` flags subagent sprawl, contradicting rules and memory that copies what lives elsewhere; project template and README say to save pointers, not copies.
 - `setup-project` checks whether the effort-guard mod is enabled and recommends it if not; README documents it as a companion mod.
 
 ## 0.3.0

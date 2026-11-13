@@ -20,4 +20,4 @@
 <!-- House style: link to a real example. Name the patterns to avoid concretely (e.g. "no pill-shaped buttons"), not "avoid a generic look". -->
 
 ## Lessons learned
-<!-- After a repeatable mistake, add one line here. -->
+<!-- After a repeatable mistake, add one line here. Only what cannot be looked up again: for facts that live in a tracker or docs, write a pointer, not a copy. -->

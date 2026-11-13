@@ -138,6 +138,14 @@ The skills follow Anthropic's guide ["Using Claude Opus 5.5 as your daily driver
 - Connect files and systems; `setup-project` points out connectors worth adding.
 - Share the house style and name concrete patterns to avoid: optional Style section in the project template.
 
+### Subagents, skills and long-running work
+
+Two Anthropic guides shaped how the kit treats agents: ["Building agents: When to fold subagents into your main agent loop"](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop) and ["Building always-on agents"](https://claude.com/resources/articles/building-always-on-agents).
+
+- Prefer one agent with skills and tools over a subagent per team or module. Keep a subagent for black-box verification (the `verifier`), parallel work in a fresh context that returns a compact result, or a context that is genuinely bloated. `setup-project` applies this rule and `audit-config` flags sprawl and contradicting rules.
+- Memory holds only what cannot be looked up again. If a fact lives in a tracker, docs or the code, save a pointer. The project template's "Lessons learned" says so.
+- Start quiet and earn attention. The alerts default to `done`, `permission` and `question`; `idle` stays off. Turn on more only if you miss them.
+
 ### Companion mod: effort-guard
 
 [effort-guard](https://github.com/stefanochieli/claude-effort-guard) watches the session while you work: a band with context, cost and rate limit, a toast after repeated failing turns, a one-command rerun of only the failing tests (Maven, Gradle, Jest, Vitest, Angular, pytest) and hints that keep the failing command through `/compact`. `setup-project` recommends it when it is not installed.
@@ -183,6 +191,7 @@ Kit minimale per Claude Code: poco contesto (le skill si caricano solo se le ric
 - Abitudini per Opus 5.5 (dalla guida Anthropic): niente "think hard", effort Medium di partenza, definire cosa significa "fatto", allegare grafici e screenshot, connettere file e sistemi, indicare lo stile della casa e i pattern da evitare.
 - Comandi: `/starterkit:deeper`, `/starterkit:setup-project`, `/starterkit:audit-config`.
 - Avvisi: per default un suono breve (diverso tra "ho finito" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js nel PATH.
+- Agenti: preferire un solo agente con skill e strumenti a un subagent per team; tenere i subagent per la verifica in contesto pulito, il lavoro parallelo e i contesti davvero gonfi. La memoria contiene solo ciò che non si può ricavare altrove (altrimenti un puntatore), e gli avvisi partono "silenziosi".
 - Le regole globali opzionali si installano con `scripts/install-global.sh` (o `.ps1` su Windows), con backup automatico.
 
 ## License
