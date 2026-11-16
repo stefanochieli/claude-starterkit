@@ -35,11 +35,11 @@ jobs:
         run: |
           $env:STARTERKIT_NOTIFY_DRYRUN = '1'
           $env:STARTERKIT_NOTIFY_PLATFORM = 'win32'
-          $env:STARTERKIT_NOTIFY_EVENTS = 'done,permission,question,idle'
+          $env:STARTERKIT_NOTIFY_EVENTS = 'done,failed,permission,question,idle'
           $count = 0
           foreach ($mode in 'sound', 'voice', 'both') {
             foreach ($lang in 'en', 'it') {
-              foreach ($kind in 'done', 'permission', 'question', 'idle') {
+              foreach ($kind in 'done', 'failed', 'permission', 'question', 'idle') {
                 $env:STARTERKIT_NOTIFY = $mode
                 $env:STARTERKIT_NOTIFY_LANG = $lang
                 $line = node plugins/starterkit/scripts/notify.js $kind | ConvertFrom-Json

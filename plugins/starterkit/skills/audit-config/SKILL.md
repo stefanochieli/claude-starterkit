@@ -20,6 +20,7 @@ Mode: $ARGUMENTS (empty means "report": analysis and proposals only, no changes)
 ## 1. Collect data
 
 - Usage data for the last period (default 30 days): you cannot run `/usage` yourself, so read the session transcripts under `~/.claude/projects/` or ask me to paste the `/usage` output. If neither is possible, say so.
+- Built-in reports: Claude Code has its own checkups, and you cannot run them yourself. Ask me to run the ones my version has and paste the result, then build on it instead of redoing the same analysis: `/doctor` (unused skills, MCP servers and plugins against their context cost, slow hooks, CLAUDE.md content derivable from the code), `/skill-doctor` (what each skill costs and how often it is used), `/doctor prompt-audit` (outdated or conflicting instructions). If I skip them or my version lacks them, continue with the files below and list it under "could not verify".
 - Read user-level configuration: `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/commands/`, `~/.claude/skills/`, `~/.claude/agents/`, configured MCP servers, hooks, and installed plugins.
 - Optionally, if I give you a list of projects, skim their CLAUDE.md files only to flag overlap with the global one.
 

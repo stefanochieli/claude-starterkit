@@ -1,5 +1,5 @@
 {
-  "description": "Voice or sound alert when Claude finishes, asks for permission, or asks a question. Configure with STARTERKIT_NOTIFY* environment variables.",
+  "description": "Voice or sound alert when Claude finishes, stops on an API error, asks for permission, or asks a question. Configure with STARTERKIT_NOTIFY* environment variables.",
   "hooks": {
     "Stop": [
       {
@@ -8,6 +8,19 @@
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/notify.js", "done"],
+            "async": true,
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/notify.js", "failed"],
             "async": true,
             "timeout": 15
           }
