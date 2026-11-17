@@ -3,7 +3,7 @@
 /*
  * starterkit notify: voice or sound alerts for Claude Code hooks.
  *
- * Usage:  node notify.js <done|permission|question|idle>
+ * Usage:  node notify.js <done|failed|permission|question|idle>
  *
  * Claude Code runs this from hooks/hooks.json. It reads the hook JSON from stdin
  * (only to find the project folder name) and always exits 0, so it can never
@@ -11,8 +11,8 @@
  *
  * Configuration, all optional. Set them in the "env" block of ~/.claude/settings.json:
  *   STARTERKIT_NOTIFY          sound | voice | both | off        (default: sound)
- *   STARTERKIT_NOTIFY_EVENTS   comma list of done,permission,question,idle
- *                            (default: done,permission,question)
+ *   STARTERKIT_NOTIFY_EVENTS   comma list of done,failed,permission,question,idle
+ *                            (default: done,failed,permission,question)
  *   STARTERKIT_NOTIFY_LANG     en | it   (default: system locale, else en)
  *   STARTERKIT_NOTIFY_VOICE    voice name to use instead of the automatic choice
  *   STARTERKIT_NOTIFY_PROJECT  1 = also say the project folder name
@@ -26,12 +26,13 @@ const path = require('node:path');
 
 const env = process.env;
 const DRY = env.STARTERKIT_NOTIFY_DRYRUN === '1';
-const KINDS = ['done', 'permission', 'question', 'idle'];
+const KINDS = ['done', 'failed', 'permission', 'question', 'idle'];
 const DEBOUNCE_MS = 4000;
 
 const MESSAGES = {
   en: {
     done: 'Claude is done',
+    failed: 'Claude stopped on an error',
     permission: 'Claude needs your permission',
     question: 'Claude has a question',
     idle: 'Claude is waiting for you',
@@ -39,6 +40,7 @@ const MESSAGES = {
   },
   it: {
     done: 'Claude ha finito',
+    failed: 'Claude si è fermato per un errore',
     permission: 'Claude ha bisogno del tuo permesso',
     question: 'Claude ha una domanda',
     idle: 'Claude ti sta aspettando',
@@ -50,14 +52,16 @@ const MESSAGES = {
 // user's sound scheme, so they still play when "No Sounds" is selected.
 const BEEPS = {
   done: [[784, 120], [1047, 200]],
+  failed: [[440, 220], [330, 320]],
   permission: [[880, 140], [880, 140], [1175, 220]],
   question: [[880, 140], [880, 140], [1175, 220]],
   idle: [[660, 200]],
 };
-const MAC_SOUNDS = { done: 'Glass', permission: 'Ping', question: 'Ping', idle: 'Pop' };
+const MAC_SOUNDS = { done: 'Glass', failed: 'Basso', permission: 'Ping', question: 'Ping', idle: 'Pop' };
 const LINUX_SOUND_DIR = '/usr/share/sounds/freedesktop/stereo/';
 const LINUX_SOUNDS = {
   done: { id: 'complete', file: 'complete.oga' },
+  failed: { id: 'dialog-error', file: 'dialog-error.oga' },
   permission: { id: 'dialog-warning', file: 'dialog-warning.oga' },
   question: { id: 'message', file: 'message.oga' },
   idle: { id: 'bell', file: 'bell.oga' },
@@ -262,7 +266,7 @@ function main(raw) {
   if (['off', '0', 'false', 'no', 'none'].includes(mode)) return;
   if (!['sound', 'voice', 'both'].includes(mode)) mode = 'sound';
 
-  const events = (env.STARTERKIT_NOTIFY_EVENTS || 'done,permission,question')
+  const events = (env.STARTERKIT_NOTIFY_EVENTS || 'done,failed,permission,question')
     .split(',')
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);

@@ -44,12 +44,13 @@ test('hooks.json is valid and every hook points at the script', () => {
         assert.equal(h.command, 'node');
         assert.equal(h.async, true);
         assert.match(h.args[0], /\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/notify\.js$/);
-        assert.ok(['done', 'permission', 'question', 'idle'].includes(h.args[1]));
+        assert.ok(['done', 'failed', 'permission', 'question', 'idle'].includes(h.args[1]));
         seen.push(event + ':' + (g.matcher || '') + ':' + h.args[1]);
       }
     }
   }
   assert.ok(seen.includes('Stop::done'));
+  assert.ok(seen.includes('StopFailure::failed'));
   assert.ok(seen.includes('Notification:permission_prompt:permission'));
   assert.ok(seen.includes('Notification:idle_prompt:idle'));
   assert.ok(seen.includes('PreToolUse:AskUserQuestion:question'));
@@ -67,6 +68,19 @@ test('unknown kind, mode off and disabled events print nothing and exit 0', () =
     assert.equal(r.status, 0);
     assert.equal(r.lines.length, 0);
   }
+});
+
+test('failed (StopFailure) is on by default, with its own sound and text', () => {
+  const mac = run(['failed'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin' });
+  assert.equal(mac.lines[0].cmd, 'afplay');
+  assert.match(mac.lines[0].args[0], /Basso\.aiff$/);
+  const it = run(['failed'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY: 'voice', STARTERKIT_NOTIFY_LANG: 'it' });
+  assert.equal(it.lines[0].cmd, 'say');
+  assert.match(it.lines[0].args[it.lines[0].args.length - 1], /errore/);
+  const win = run(['failed'], { STARTERKIT_NOTIFY_PLATFORM: 'win32' });
+  assert.ok(balanced(decode(win.lines[0])));
+  const off = run(['failed'], { STARTERKIT_NOTIFY_PLATFORM: 'darwin', STARTERKIT_NOTIFY_EVENTS: 'done' });
+  assert.equal(off.lines.length, 0);
 });
 
 test('idle works once enabled', () => {
