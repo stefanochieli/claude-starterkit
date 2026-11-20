@@ -19,7 +19,7 @@ A small, verification-first setup for Claude Code. It packages a few habits that
 | Export script | `scripts/export-skills.sh` / `.ps1` | Packages the skills for claude.ai (zip) and GitHub Copilot. See [Use the skills outside Claude Code](#use-the-skills-outside-claude-code). |
 | Templates | `plugins/starterkit/templates/` | Global and per-project CLAUDE.md skeletons and an optional Stop-hook example (not enabled). |
 
-The skills are stack-agnostic. They detect your build tool, test framework and conventions from the repository.
+The skills are stack-agnostic. `setup-project` works on any kind of project (backend, frontend, mobile, data, infrastructure, library, docs), single-module or monorepo: it detects build tool, test framework and conventions from the repository, takes the commands from what the repo and its CI already use, and says so when there are no tests instead of inventing commands.
 
 ## Install
 

@@ -21,8 +21,14 @@ User notes (optional): $ARGUMENTS
 
 ## Phase 1 - Analysis (read-only)
 
+This works for any kind of project and stack: backend, frontend, mobile, data or ML, infrastructure as code, scripts, a library, documentation or content. Do not assume a language or framework; learn it from the repo:
+- Find the entry points of the build: manifests, lock files, task runners and CI files (for example `pom.xml`, `build.gradle`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `*.csproj`, `Gemfile`, `composer.json`, `Makefile`, `justfile`, `Dockerfile`, `*.tf`, `.github/workflows/`). Treat this list as examples, not a checklist; an unfamiliar ecosystem is read from its own files and docs.
+- The commands that matter most are the ones the repo already documents or that CI runs: README, CONTRIBUTING, Makefile targets, CI steps.
+- Several stacks or modules (monorepo, backend plus frontend, polyglot): list each with its own commands, and say which checks are fast enough for every change and which only for a final check. Do not force a single build tool onto all of them.
+- No tests, no CI, an empty repo or a non-code project (docs, content, data): say so. Propose the smallest check that still proves something (a build, a type check, a linter, a link check, a schema validation, a dry run) and name the first test worth writing, instead of inventing commands.
+
 Summarize briefly:
-- Real stack and modules: languages, build tool, framework versions, database and migration tool, containers.
+- Real stack and modules: languages, build tool, framework versions, database and migration tool, containers, deployment target.
 - Exact commands to build, test, lint and run locally, as the repo documents them. Do not run anything yet: in a repo you do not know, build and test scripts execute arbitrary code.
 - Existing tests: unit, integration, E2E, contract. Obvious gaps.
 - Quality tooling already present (linters, static analysis, architecture tests, mutation or property-based testing).
