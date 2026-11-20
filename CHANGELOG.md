@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0
+
+- `scripts/export-skills.sh` / `.ps1`: export the skills outside Claude Code, as one zip per skill for claude.ai and as copies in GitHub Copilot skill folders (`.github/skills/`, `~/.copilot/skills/`). Frontmatter is reduced to `name` and `description`, `$ARGUMENTS` is replaced, and a note says the skill was written for Claude Code. README lists what only works in Claude Code (hooks, `verifier`, slash commands).
+- `setup-project` states explicitly that it works for any stack and project type: detection from manifests, README and CI instead of assumptions, per-module commands for monorepos and polyglot repos, and a minimal proposal when there are no tests or the project is not code.
+
 ## 0.4.0
 
 - New `failed` alert: `StopFailure` hook, on by default, with its own sound and spoken text. A turn that dies on a rate limit or another API error no longer ends in silence (Claude Code does not fire `Stop` for it).

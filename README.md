@@ -16,9 +16,10 @@ A small, verification-first setup for Claude Code. It packages a few habits that
 | `audit-config` skill | `/starterkit:audit-config [report\|apply]` | Monthly audit of usage and user-level config: heavy subagents, unused MCP servers, stale skills, bloated CLAUDE.md. Builds on the output of `/doctor`, `/skill-doctor` and `/doctor prompt-audit` when you paste it. Report-only by default; backups and diffs before any change. |
 | `verifier` subagent | delegated by Claude, or "use the verifier" | Clean-context checker. Runs the project's checks and looks for weakened tests. It has no edit tools, but `Bash` is not restricted, so "does not edit" is an instruction, not a guarantee. |
 | Alert hooks | automatic | Sound or voice alert on `Stop`, API errors (`StopFailure`), permission prompts, questions, and (optionally) idle. See [Alerts](#alerts-when-claude-finishes-or-needs-you). |
+| Export script | `scripts/export-skills.sh` / `.ps1` | Packages the skills for claude.ai (zip) and GitHub Copilot. See [Use the skills outside Claude Code](#use-the-skills-outside-claude-code). |
 | Templates | `plugins/starterkit/templates/` | Global and per-project CLAUDE.md skeletons and an optional Stop-hook example (not enabled). |
 
-The skills are stack-agnostic. They detect your build tool, test framework and conventions from the repository.
+The skills are stack-agnostic. `setup-project` works on any kind of project (backend, frontend, mobile, data, infrastructure, library, docs), single-module or monorepo: it detects build tool, test framework and conventions from the repository, takes the commands from what the repo and its CI already use, and says so when there are no tests instead of inventing commands.
 
 ## Install
 
@@ -55,6 +56,28 @@ Plugins cannot ship a CLAUDE.md, so a short block of global rules is installed b
 ```
 
 Set `CLAUDE_CONFIG_DIR` if your Claude config is not in `~/.claude`.
+
+## Use the skills outside Claude Code
+
+The three skills are plain `SKILL.md` files, so they can also be used in claude.ai and in GitHub Copilot. You run the export script once from a clone of this repo, in any terminal (no Claude Code needed; it only needs `bash` plus `zip` or `python3`, or PowerShell on Windows):
+
+```bash
+git clone https://github.com/stefanochieli/claude-starterkit && cd claude-starterkit
+./scripts/export-skills.sh                              # zips in ./dist/skills/ for claude.ai
+./scripts/export-skills.sh --copilot-repo ~/work/myrepo # copies to myrepo/.github/skills/
+./scripts/export-skills.sh --copilot-user               # copies to ~/.copilot/skills/
+./scripts/export-skills.sh --skills deeper              # only some skills
+```
+
+```powershell
+./scripts/export-skills.ps1                             # same options: -Zip -ZipDir -CopilotRepo -CopilotUser -Skills
+```
+
+- **claude.ai:** upload each `dist/skills/<skill>.zip` from **Customize > Skills** (older UI: Settings > Capabilities), then turn the skill on. The zip holds one top-level folder named like the skill, as the docs require. Claude uses the skill from its description; there are no `/starterkit:` slash commands there.
+- **GitHub Copilot:** skills are read from `.github/skills/<skill>/SKILL.md` in a repo or `~/.copilot/skills/` for you (Copilot cloud agent, Copilot CLI, VS Code agent mode). Copilot picks the skill from its description.
+- The export keeps only `name` and `description` in the frontmatter, turns the Claude Code `$ARGUMENTS` placeholder into "what I wrote in my message", and adds a note that the skill was written for Claude Code. Because `disable-model-invocation` is dropped, the exported skills can trigger on their own from the description.
+- **Only in Claude Code:** the alert hooks, the `verifier` subagent and `/starterkit:` commands. `deeper` works anywhere. `setup-project` and `audit-config` are written around Claude Code (`CLAUDE.md`, `.claude/`, `/doctor`, `/effort`), and they need a place that can read your files: in claude.ai they can only work on what you paste or attach.
+- Re-running the script is safe: a Copilot `SKILL.md` that you changed is saved as `SKILL.md.bak-<date>` first.
 
 ## Alerts when Claude finishes or needs you
 
@@ -202,6 +225,7 @@ Kit minimale per Claude Code: poco contesto (le skill si caricano solo se le ric
 - Comandi: `/starterkit:deeper`, `/starterkit:setup-project`, `/starterkit:audit-config`.
 - Avvisi: per default un suono breve (diverso tra "ho finito", "mi sono fermato per un errore" e "mi serve qualcosa"). Per la voce in italiano aggiungi a `~/.claude/settings.json`: `"env": { "STARTERKIT_NOTIFY": "voice", "STARTERKIT_NOTIFY_LANG": "it" }`. Serve Node.js nel PATH.
 - Agenti: preferire un solo agente con skill e strumenti a un subagent per team; tenere i subagent per la verifica in contesto pulito, il lavoro parallelo e i contesti davvero gonfi. La memoria contiene solo ciò che non si può ricavare altrove (altrimenti un puntatore), e gli avvisi partono "silenziosi".
+- Skill fuori da Claude Code: `scripts/export-skills.sh` (o `.ps1`) crea uno zip per skill da caricare su claude.ai (Customize > Skills) oppure le copia in `.github/skills/` di un repo o in `~/.copilot/skills/` per GitHub Copilot. Si lancia da un terminale qualsiasi sul tuo PC, anche senza Claude Code. Hook e subagent `verifier` restano solo per Claude Code.
 - Le regole globali opzionali si installano con `scripts/install-global.sh` (o `.ps1` su Windows), con backup automatico.
 
 ## License

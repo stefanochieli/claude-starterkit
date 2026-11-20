@@ -54,6 +54,19 @@ jobs:
             }
           }
           Write-Host "$count generated scripts parsed cleanly"
+      - name: Skill export script (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'skills'
+          ./scripts/export-skills.ps1 -ZipDir $out
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          foreach ($n in 'deeper', 'setup-project', 'audit-config') {
+            $z = [System.IO.Compression.ZipFile]::OpenRead((Join-Path $out "$n.zip"))
+            $names = $z.Entries | ForEach-Object { $_.FullName }
+            $z.Dispose()
+            if ($names -ne "$n/SKILL.md") { throw "Unexpected zip entries for ${n}: $names" }
+          }
 
   validate:
     name: validate
@@ -73,7 +86,9 @@ jobs:
             echo "ok: $f"
           done
       - name: Shell script syntax
-        run: bash -n scripts/install-global.sh
+        run: |
+          bash -n scripts/install-global.sh
+          bash -n scripts/export-skills.sh
       - name: Claude Code plugin validation
         run: |
           npm install --global @anthropic-ai/claude-code@2.1.318
