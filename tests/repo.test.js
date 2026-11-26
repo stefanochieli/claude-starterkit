@@ -66,3 +66,12 @@ test('plugin version is documented in the CHANGELOG and tagged by the tag-releas
   assert.match(wf, /^on:\n  push:\n    branches: \[main\]/m);
   assert.match(wf, /plugins\/starterkit\/\.claude-plugin\/plugin\.json/);
 });
+
+test('global template has one balanced marker block with the verification, tests and challenge rules', () => {
+  const t = read('plugins/starterkit/templates/global-claude.md');
+  assert.equal(t.match(/^<!-- starterkit:start -->$/gm).length, 1);
+  assert.equal(t.match(/^<!-- starterkit:end -->$/gm).length, 1);
+  assert.match(t, /Never report "done" with failing checks/);
+  assert.match(t, /Never modify or weaken existing tests/);
+  assert.match(t, /Do not agree to please me/);
+});
