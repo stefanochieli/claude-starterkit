@@ -1,6 +1,6 @@
 {
   "name": "starterkit",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Verification-first, low-context setup for Claude Code: deeper task prompts, per-project configuration, periodic config audit, a verifier subagent, and voice/sound alerts when Claude finishes or needs you.",
   "author": {
     "name": "stefanochieli"

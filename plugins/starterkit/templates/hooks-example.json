@@ -1,5 +1,5 @@
 {
-  "_comment": "OPTIONAL example, not enabled by the plugin. Copy into a project's .claude/settings.json and replace the command. Use only if the check is fast; a slow Stop hook makes every turn expensive.",
+  "_comment": "OPTIONAL example, not enabled by the plugin. Copy into a project's .claude/settings.json and replace the command. Use only if the check is fast; a slow Stop hook makes every turn expensive. When the check fails, make the command exit with code 2 and print on stderr the failed check and the command to rerun it: that stderr text is what the model receives (with exit code 1 it only reaches you).",
   "hooks": {
     "Stop": [
       {
