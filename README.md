@@ -55,6 +55,8 @@ Plugins cannot ship a CLAUDE.md, so a short block of global rules is installed b
 ./scripts/install-global.ps1 -Remove     # undo
 ```
 
+The block has three rules: verify before saying "done", never weaken tests, and challenge instead of agreeing (Claude contradicts you with evidence when you diverge from the code, docs or tests). Delete the line you do not want from your `~/.claude/CLAUDE.md`, or edit `plugins/starterkit/templates/global-claude.md` before installing.
+
 Set `CLAUDE_CONFIG_DIR` if your Claude config is not in `~/.claude`.
 
 ## Use the skills outside Claude Code

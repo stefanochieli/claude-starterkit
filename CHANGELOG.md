@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- Global working rules: new "challenge" rule. Claude must not agree out of politeness; when your request or claim diverges from the code, docs or tests, it says so before acting and proves it with evidence (file and line, doc, test or command output). Re-run `scripts/install-global.sh` (or `.ps1`) to update your `~/.claude/CLAUDE.md`. The project template is unchanged: this is a personal preference, so it stays in the global block.
+
 ## 0.5.0
 
 - `scripts/export-skills.sh` / `.ps1`: export the skills outside Claude Code, as one zip per skill for claude.ai and as copies in GitHub Copilot skill folders (`.github/skills/`, `~/.copilot/skills/`). Frontmatter is reduced to `name` and `description`, `$ARGUMENTS` is replaced, and a note says the skill was written for Claude Code. README lists what only works in Claude Code (hooks, `verifier`, slash commands).
