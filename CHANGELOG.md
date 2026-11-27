@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+
+- `audit-config` (C3): before folding a subagent into a skill, it proposes a small before/after check (5-10 real tasks plus the rules that must not break, each run at least twice, compared task by task) so a regression that shows up one run in two is not missed.
+- `setup-project` (hooks): a blocking hook must say what to do next, not just "blocked". The Stop hook example now explains that the command must exit with code 2 and print the failed check and the rerun command on stderr, because that is what the model receives.
+
 ## 0.6.0
 
 - Global working rules: new "challenge" rule. Claude must not agree out of politeness; when your request or claim diverges from the code, docs or tests, it says so before acting and proves it with evidence (file and line, doc, test or command output). Re-run `scripts/install-global.sh` (or `.ps1`) to update your `~/.claude/CLAUDE.md`. The project template is unchanged: this is a personal preference, so it stays in the global block.
